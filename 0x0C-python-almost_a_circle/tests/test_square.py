@@ -200,3 +200,151 @@ class test_square(unittest.TestCase):
     def test_str_overload(self):
         s = Square(5, 8, 7, 88)
         self.assertEqual(s.__str__(), "[Square] (88) 8/7 - 5")
+
+    def test_update_id(self):
+        '''
+            Testing the update method
+        '''
+        self.s.update(54)
+        self.assertEqual(54, self.s.id)
+
+    def test_update_width(self):
+        '''
+            Testing the update method
+        '''
+        self.s.update(54, 30)
+        self.assertEqual(5, self.s.width)
+
+    def test_update_height(self):
+        '''
+            Testing the update method
+        '''
+        self.s.update(54, 10)
+        self.assertEqual(5, self.s.height)
+
+    def test_update_x(self):
+        '''
+            Testing the update method
+        '''
+        self.s.update(54, 30, 10)
+        self.assertEqual(10, self.s.x)
+
+    def test_update_y(self):
+        '''
+            Testing the update method
+        '''
+        self.s.update(54, 30, 6, 2)
+        self.assertEqual(2, self.s.y)
+
+    def test_update_dict(self):
+        '''
+            Testing the update method with **kwargs
+        '''
+        self.s.update(y=1, size=2, x=3, id=89)
+        self.assertEqual(1, self.s.y)
+        self.assertEqual(2, self.s.size)
+        self.assertEqual(3, self.s.x)
+        self.assertEqual(89, self.s.id)
+
+    def test_update_dict_list(self):
+        '''
+            Testing the update method with **kwargs and *args
+        '''
+        self.s.update(1000, y=1, width=2, x=3, id=89)
+        self.assertEqual(1000, self.s.id)
+
+    def test_update_dict_no_key(self):
+        '''
+            Testing the update method with **kwargs
+        '''
+        self.s.update(y=1, size=2, xox=3, id=89)
+
+    def test_update_string(self):
+        '''
+            Testing the update method with **kwargs
+        '''
+        # self.assertEqual(self.s.id, "str")
+        with self.assertRaises(TypeError):
+           self.s.update("str") 
+
+    def test_to_dict(self):
+        '''
+            Testing the type that is returned from the to_dictionary method
+        '''
+        r1 = Square(5)
+        self.assertEqual(type(r1.to_dictionary()), dict)
+
+    def test_to_dict_print(self):
+        '''
+            Testing the dict that will be printed
+        '''
+        r1 = Square(5, 0, 0, 410)
+        r1_dict = r1.to_dictionary()
+        self.assertEqual(r1_dict,
+                         {'size': 5, 'id': 410, 'x': 0, 'y': 0})
+
+    def test_missing_height(self):
+        '''
+            Expecting a type error because height and width are missing
+        '''
+        with self.assertRaises(TypeError):
+            Square()
+
+    def test_saving_to_file(self):
+        '''
+            Testing saving a file into json format
+        '''
+        try:
+            os.remove("Square.json")
+        except:
+            pass
+        r1 = Square(5, 0, 0, 346)
+        Square.save_to_file([r1])
+
+        with open("Square.json", "r") as file:
+            content = file.read()
+        t = [{"id": 346, "x": 0, "size": 5, "y": 0}]
+        self.assertEqual(t, json.loads(content))
+
+    def test_saving_to_file_no_iter(self):
+        '''
+            Sending a non iterable to the function
+        '''
+        with self.assertRaises(TypeError):
+            Square.save_to_file(self.s)
+
+    def test_saving_to_file_None(self):
+        '''
+            Testing saving a file into json format sending None
+        '''
+        try:
+            os.remove("Square.json")
+        except:
+            pass
+        r1 = Square(5, 0, 0, 346)
+        Square.save_to_file(None)
+
+        with open("Square.json", "r") as file:
+            content = file.read()
+
+        self.assertEqual("[]", content)
+
+    def test_saving_to_file_type(self):
+        '''
+            Testing saving a file into json format and testing the type
+        '''
+        try:
+            os.remove("Square.json")
+        except:
+            pass
+        r1 = Square(5, 0, 0, 346)
+        Square.save_to_file([r1])
+
+        with open("Square.json", "r") as file:
+            content = file.read()
+
+        self.assertEqual(str, type(content))
+        try:
+            os.remove("Square.json")
+        except:
+            pass
